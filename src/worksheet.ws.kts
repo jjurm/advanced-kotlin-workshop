@@ -108,6 +108,8 @@ fun printAge(age: Int) {
 var n = 5
 printAge(n)
 
+//n = null
+
 var numberOrNull: Int? = 5
 //printNumber(numberOrNot)
 
@@ -149,8 +151,6 @@ fun Int.triple() = this * 3
 2.triple()
 (2 + 2).triple()
 
-fun String.doubleLength() = this.length * 2
-
 
 
 
@@ -162,20 +162,31 @@ fun String.doubleLength() = this.length * 2
 
 // Lambdas
 
-val getDoubleLength = { str: String ->
-    str.length * 2
+val doubleLen = { s: String ->
+    s.length * 2
 }
-val getDoubleLength2: (String) -> Int = { it.length * 2 }
-val getDoubleLength3 = fun(str: String): Int {
-    return str.length * 2
-}
-
-fun getDoubleLength4(str: String): Int {
-    return str.length * 2
+val doubleLen2: (String) -> Int = { it.length * 2 }
+val doubleLen3 = fun(s: String): Int {
+    return s.length * 2
 }
 
-val getDoubleLength5: (String) -> Int = ::getDoubleLength4
+fun doubleLen4(s: String): Int {
+    return s.length * 2
+}
 
+val doubleLen5: (String) -> Int = ::doubleLen4
+
+doubleLen5("abc")
+
+
+
+// Extension function on lambda
+
+fun ((String) -> String).applyTwice(): (String) -> String {
+    return {
+        this(this(it))
+    }
+}
 
 
 
@@ -195,6 +206,7 @@ fun compute(): Boolean {
     }
     return result
 }
+compute()
 
 
 
@@ -219,17 +231,19 @@ compute2()
 
 
 // Data class
+
+data class UserRecord(val name: String, val dob: LocalDate = LocalDate.now(), val happy: Boolean = false)
+
+
 // Named & default arguments
 
-
-data class UserRecord(val name: String, val born: LocalDate = LocalDate.now(), var happy: Boolean = false)
-
 val user1 = UserRecord("Juraj", Year.of(1998).atDay(21), true)
-val user2 = UserRecord(name = "Jack", happy = true)
 
 user1
 
 val (name1, born1, happy1) = user1
+
+val user2 = UserRecord(name = "Jack", happy = false)
 
 
 
@@ -242,7 +256,7 @@ val (name1, born1, happy1) = user1
 
 // Sealed classes, `when` construct
 
-sealed class Vehicle {
+abstract class Vehicle {
     abstract val numWheels: Int
 
     class Car : Vehicle() {
@@ -258,7 +272,8 @@ sealed class Vehicle {
 
 fun isAllowed(vehicle: Vehicle) = when (vehicle) {
     is Vehicle.Car -> true
-    is Vehicle.Bicycle -> (!vehicle.broken)
+    is Vehicle.Bicycle -> !vehicle.broken
+    else -> false
 }
 isAllowed(Vehicle.Car())
 
@@ -318,12 +333,12 @@ counter + 2
 val users = listOf(
     user1,
     user2,
-    UserRecord("Someone", born = Year.of(1998).atDay(1))
+    UserRecord("Someone", dob = Year.of(1998).atDay(1))
 )
 
 users
     .filter { it.happy }
-    .map { it.born.year }
+    .map { it.dob.year }
     .all { it > 1980 }
 
 
@@ -350,7 +365,7 @@ val mappedUsers2 = users.mapIndexed { index, userRecord ->
 
 
 infix fun UserRecord.addSurname(surname: String): UserRecord =
-    UserRecord("$name $surname", born, happy)
+    UserRecord("$name $surname", dob, happy)
 
 user1
 user1 addSurname "Micko"
