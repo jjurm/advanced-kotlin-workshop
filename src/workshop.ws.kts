@@ -19,11 +19,16 @@ hello(myName)
 
 
 
+
+
 // Why Kotlin?
 
 with("Kotlin") {
-    "an awesome language".let { "$this is $it" }
-}
+    "an awesome language".let { "$this is $it!" }
+}.apply(::println)
+
+
+
 
 
 
@@ -77,6 +82,7 @@ var numberOrNull: Int? = 5
 
 // Smart cast
 
+
 fun printAgeOrNull(ageOrNull: Int?) {
     if (ageOrNull == null) {
         println("No age provided")
@@ -95,14 +101,18 @@ printAgeOrNull(numberOrNull)
 
 
 
+
+
 // Extension functions
 
-
-fun Int.triple(): Int {
-    return this * 3
-}
+fun Int.triple() = this * 3
 2.triple()
 (2 + 2).triple()
+
+
+
+
+
 
 
 
@@ -113,10 +123,7 @@ fun Int.triple(): Int {
 val doubleLen = { s: String ->
     s.length * 2
 }
-val doubleLen2: (String) -> Int = { inputString ->
-    inputString.length * 2
-}
-
+val doubleLen2: (String) -> Int = { it.length * 2 }
 val doubleLen3 = fun(s: String): Int {
     return s.length * 2
 }
@@ -137,7 +144,7 @@ val emph: (String) -> String = { "$it!" }
 
 fun ((String) -> String).applyTwice(): (String) -> String = { this(this(it)) }
 
-
+emph.applyTwice()("Kotlin")
 
 
 
@@ -157,15 +164,21 @@ fun compute(): Boolean {
 compute()
 
 
+
 fun Boolean.runIfTrue(block: () -> Unit): Boolean {
     if (this) {
         block()
+        // or block.invoke()
     }
     return this
 }
 
 fun compute2() = getBool().runIfTrue { println("yay") }
 compute2()
+
+
+
+
 
 
 
@@ -181,6 +194,7 @@ data class UserRecord(
 )
 
 val user1 = UserRecord("Juraj", Year.of(1998).atDay(21), true)
+
 user1
 
 val (name1, dob1, happy1) = user1
@@ -221,6 +235,7 @@ isAllowed(Vehicle.Car())
 
 
 
+
 // Auto type unboxing
 
 fun accept(bool: Boolean) {
@@ -228,6 +243,8 @@ fun accept(bool: Boolean) {
 }
 
 fun acceptNullable(bool: Boolean?) {}
+
+
 
 
 
@@ -250,6 +267,7 @@ val one = Complex(1.0, 0.0)
 (zero + one) == one
 (zero + one) === one
 
+
 var counter = zero
 counter++
 counter
@@ -262,7 +280,7 @@ counter
 
 // Working with collections
 
-val users = listOf (
+val users = listOf(
     user1,
     user2,
     UserRecord("Someone", happy = true)
@@ -278,6 +296,10 @@ users
 
 
 
+
+
+
+
 // Infix functions
 
 2 to 3
@@ -287,6 +309,7 @@ val mappedUsers = mapOf(
     1 to user1,
     2 to user2
 )
+
 val mappedUsers2 = users.mapIndexed { index, userRecord ->
     index to userRecord
 }.toMap()
@@ -303,9 +326,13 @@ user1 addSurname "Micko"
 
 
 
+
+
+
+
 // Delegated properties
 
-open class HeyWorld(var abc: String) { // not final class
+open class HeyWorld(val abc: String) { // not final class
     // `abc` is a constructor argument and an immutable property
 
     var foo = "bar" // public getter and setter
